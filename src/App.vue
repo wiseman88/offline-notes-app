@@ -34,7 +34,7 @@ export default {
       ],
       editorProps: {
         attributes: {
-          class: "prose my-6 mx-auto focus:outline-none"
+          class: "prose my-6 mx-auto focus:outline-none bg-gray-200 rounded p-2"
         }
       }
     });
