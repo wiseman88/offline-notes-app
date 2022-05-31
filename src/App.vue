@@ -6,7 +6,12 @@
     <div class="flex flex-col flex-grow">
       <!-- main content -->
       <div class="flex flex-col flex-grow overflow-auto">
-        <editor-content :editor="editor"/>
+        <editor-content :editor="editor" />
+      </div>
+      <div class="h-16 p-2 bg-gray-100 border-t border-gray-300 text-right">
+        <button class="bg-gray-300 border rounded px-4 py-2" @click="saveNote()">
+          Save Note
+        </button>
       </div>
     </div>
   </div>
@@ -27,10 +32,10 @@ export default {
       database: null,
     }
   },
-  async created(){
+  async created() {
     this.database = await this.getDatabase();
-  },  
-  mounted(){
+  },
+  mounted() {
     this.editor = new Editor({
       content: '',
       extensions: [
@@ -43,13 +48,13 @@ export default {
       }
     });
   },
-  beforeUnmount(){
+  beforeUnmount() {
     this.editor.destroy();
   },
   methods: {
-    async getDatabase(){
+    async getDatabase() {
       return new Promise((resolve, reject) => {
-        let db = window.indexedDB.open("notes");
+        let db = window.indexedDB.open("notes", 2);
 
         db.onerror = e => {
           reject("Error opening the database.");
@@ -62,8 +67,23 @@ export default {
 
         db.onupgradeneeded = e => {
           console.log('db.onupgradeneeded', e);
+          e.target.result.deleteObjectStore("notes");
           e.target.result.createObjectStore("notes");
         };
+      });
+    },
+    async saveNote() {
+      return new Promise((resolve, reject) => {
+        let transaction = this.database.transaction('notes', 'readwrite');
+        transaction.oncomplete = e => {
+          resolve();
+        }
+
+        let now = new Date();
+        transaction.objectStore('notes').add({
+          content: this.editor.getHTML(),
+          created: now.getTime()
+        });
       });
     }
   }
