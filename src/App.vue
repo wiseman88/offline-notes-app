@@ -78,10 +78,13 @@ export default {
         };
 
         db.onupgradeneeded = e => {
-          console.log('db.onupgradeneeded', e);
-          e.target.result.deleteObjectStore("notes");
-          e.target.result.createObjectStore("notes");
-        };
+                    console.log('db.onupgradeneeded', e);
+
+                    if (e.oldVersion === 1) {
+                        e.target.result.deleteObjectStore("notes");
+                    }
+                    e.target.result.createObjectStore("notes", { keyPath: "created" });
+                };
       });
     },
     async saveNote() {
