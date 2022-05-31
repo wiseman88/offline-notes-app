@@ -5,13 +5,37 @@
     </div>
     <div class="flex flex-col flex-grow">
       <!-- main content -->
+      <div class="flex flex-col flex-grow overflow-auto">
+        <editor-content :editor="editor"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { Editor, EditorContent } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
 
 export default {
   name: 'App',
+  components: {
+    EditorContent
+  },
+  data() {
+    return {
+      editor: null
+    }
+  },
+  mounted(){
+    this.editor = new Editor({
+      content: '',
+      extensions: [
+        StarterKit
+      ]
+    });
+  },
+  beforeUnmount(){
+    this.editor.destroy();
+  }
 }
 </script>
