@@ -31,7 +31,12 @@ export default {
       content: '',
       extensions: [
         StarterKit
-      ]
+      ],
+      editorProps: {
+        attributes: {
+          class: "prose my-6 mx-auto focus:outline-none"
+        }
+      }
     });
   },
   beforeUnmount(){
