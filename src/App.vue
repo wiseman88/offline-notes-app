@@ -4,7 +4,12 @@
       <!-- sidebar -->
       <div class="h-0 overflow-auto flex-grow">
         <div class="mt-4">
-          <a v-for="note in notes" :key="note.created" href="#" class="flex items-center h-8 text-sm pl-8 pr-3">
+          <a 
+            v-for="note in notes" 
+            :key="note.created" 
+            href="#"
+            @click.prevent="openNote(note)" 
+            class="flex items-center h-8 text-sm pl-8 pr-3">
             <span class="ml-2 leading-none">
               {{ new Date(note.created).toLocaleString() }}
             </span>
@@ -39,7 +44,8 @@ export default {
     return {
       editor: null,
       database: null,
-      notes: []
+      notes: [],
+      activeNote: {}
     }
   },
   async created() {
@@ -78,13 +84,13 @@ export default {
         };
 
         db.onupgradeneeded = e => {
-                    console.log('db.onupgradeneeded', e);
+          console.log('db.onupgradeneeded', e);
 
-                    if (e.oldVersion === 1) {
-                        e.target.result.deleteObjectStore("notes");
-                    }
-                    e.target.result.createObjectStore("notes", { keyPath: "created" });
-                };
+          if (e.oldVersion === 1) {
+            e.target.result.deleteObjectStore("notes");
+          }
+          e.target.result.createObjectStore("notes", { keyPath: "created" });
+        };
       });
     },
     async saveNote() {
@@ -99,7 +105,7 @@ export default {
           content: this.editor.getHTML(),
           created: now.getTime()
         }
-        
+
         this.notes.unshift(note);
 
         transaction.objectStore('notes').add(note);
@@ -115,6 +121,10 @@ export default {
             resolve(e.target.result);
           }
       });
+    },
+    openNote(note){
+      this.editor.commands.setContent(note.content);
+      this.activeNote = note;
     }
   }
 }
