@@ -5,10 +5,7 @@
       <div class="h-0 overflow-auto flex-grow">
         <div class="flex items-center h-8 px-3 group mt-4">
           <div class="flex items-center flex-grow focus:outline-none">
-            <a 
-              href="#"
-              @click.prevent="showAllNotes"
-              class="ml-2 leading-none font-medium text-sm">
+            <a href="#" @click.prevent="showAllNotes" class="ml-2 leading-none font-medium text-sm">
               All Notes
             </a>
           </div>
@@ -108,20 +105,29 @@ export default {
     },
     async saveNote() {
       return new Promise((resolve, reject) => {
-        let transaction = this.database.transaction('notes', 'readwrite');
-        transaction.oncomplete = e => {
-          resolve();
+        let noteStore = this.database.transaction('notes', 'readwrite')
+            .objectStore('notes');
+
+        let noteRequest = noteStore.get(this.activeNote.created);
+
+        noteRequest.onerror = e => {
+          reject('Error saving the note in the database');
         }
 
-        let now = new Date();
-        let note = {
-          content: this.editor.getHTML(),
-          created: now.getTime()
+        noteRequest.onsuccess = e => {
+          let note = e.target.result;
+          note.content = this.editor.getHTML();
+
+          let updateRequest = noteStore.put(note);
+
+          updateRequest.onerror = e => {
+            reject('Error stroing the update in the database.');
+          }
+
+          updateRequest.onsuccess = e => {
+
+          }
         }
-
-        this.notes.unshift(note);
-
-        transaction.objectStore('notes').add(note);
       });
     },
     async getNotes() {
@@ -135,15 +141,15 @@ export default {
           }
       });
     },
-    openNote(note){
+    openNote(note) {
       this.editor.commands.setContent(note.content);
       this.activeNote = note;
     },
-    showAllNotes(){
+    showAllNotes() {
       this.editor.commands.clearContent();
       this.activeNote = {};
     },
-    addNewNote(){
+    addNewNote() {
       return new Promise((resolve, reject) => {
         let transaction = this.database.transaction('notes', 'readwrite');
         transaction.oncomplete = e => {
@@ -170,10 +176,10 @@ export default {
 
 <style lang="postcss">
 button.save-note {
-  @apply bg-none border border-gray-900 rounded py-1 px-4 mr-4 mt-3 hover:bg-gray-900 hover:text-white;
+  @apply bg-none border border-gray-900 rounded py-1 px-4 mr-4 mt-3 hover: bg-gray-900 hover:text-white;
 }
 
 button.add-note {
-  @apply flex items-center justify-center h-6 w-6 ml-1 rounded hover:bg-gray-300;
+  @apply flex items-center justify-center h-6 w-6 ml-1 rounded hover: bg-gray-300;
 }
 </style>
