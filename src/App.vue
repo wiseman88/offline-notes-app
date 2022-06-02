@@ -125,7 +125,9 @@ export default {
           }
 
           updateRequest.onsuccess = e => {
-
+            let noteIndex = this.notes.findIndex(n => n.created === note.created);
+            this.notes[noteIndex] = note;
+            resolve();
           }
         }
       });
