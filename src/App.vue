@@ -176,10 +176,10 @@ export default {
 
 <style lang="postcss">
 button.save-note {
-  @apply bg-none border border-gray-900 rounded py-1 px-4 mr-4 mt-3 hover: bg-gray-900 hover:text-white;
+  @apply bg-none border border-gray-900 rounded py-1 px-4 mr-4 mt-3 hover:bg-gray-900 hover:text-white;
 }
 
 button.add-note {
-  @apply flex items-center justify-center h-6 w-6 ml-1 rounded hover: bg-gray-300;
+  @apply flex items-center justify-center h-6 w-6 ml-1 rounded hover:bg-gray-300;
 }
 </style>
