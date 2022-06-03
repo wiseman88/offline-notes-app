@@ -1,5 +1,8 @@
 <template>
   <div class="flex w-screen h-screen text-gray-700">
+    <div v-if="isOffline" class="absolute top-0 left-0 opacity-75 z-10 w-full text-center py-2 bg-red-300 border-b border-red-500 text-red-800">
+      Sorry, it looks like you're offline.
+    </div>
     <div class="flex flex-col flex-shrink-0 w-64 border-r border-gray-300 bg-gray-100">
       <!-- sidebar -->
       <div class="h-0 overflow-auto flex-grow">
@@ -71,7 +74,8 @@ export default {
       editor: null,
       database: null,
       notes: [],
-      activeNote: {}
+      activeNote: {},
+      isOffline: !navigator.onLine
     }
   },
   async created() {
@@ -90,6 +94,16 @@ export default {
           class: "prose my-6 mx-auto focus:outline-none bg-gray-200 rounded p-2"
         }
       }
+    });
+
+    window.addEventListener('offline', e => {
+      this.isOffline = true;
+    });
+
+    window.addEventListener('online', e => {
+      this.isOffline = false;
+
+      this.syncUserData();
     });
   },
   beforeUnmount() {
@@ -187,6 +201,11 @@ export default {
         this.activeNote = note;
         transaction.objectStore('notes').add(note);
       });
+    },
+    syncUserData(){
+      if (this.isOffline) {
+        return;
+      }
     }
   }
 }
