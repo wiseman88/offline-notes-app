@@ -72,16 +72,7 @@ export default {
   data() {
     return {
       editor: null,
-      database: null,
-      notes: [],
-      activeNote: {},
-      isOffline: !navigator.onLine
     }
-  },
-  async created() {
-    this.database = await this.getDatabase();
-    let notes = await this.getNotes();
-    this.notes = notes.reverse();
   },
   mounted() {
     this.editor = new Editor({
@@ -112,25 +103,7 @@ export default {
   methods: {
     async getDatabase() {
       return new Promise((resolve, reject) => {
-        let db = window.indexedDB.open("notes", 2);
-
-        db.onerror = e => {
-          reject("Error opening the database.");
-        };
-
-        db.onsuccess = e => {
-          console.log('db.onsuccess', e);
-          resolve(e.target.result);
-        };
-
-        db.onupgradeneeded = e => {
-          console.log('db.onupgradeneeded', e);
-
-          if (e.oldVersion === 1) {
-            e.target.result.deleteObjectStore("notes");
-          }
-          e.target.result.createObjectStore("notes", { keyPath: "created" });
-        };
+        
       });
     },
     async saveNote() {
