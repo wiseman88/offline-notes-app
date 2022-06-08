@@ -3,4 +3,24 @@ import App from './App.vue'
 import './app.css'
 import './registerServiceWorker'
 
-createApp(App).mount('#app')
+import { createStore } from 'vuex'
+
+const store = createStore({
+        state(){
+                return {
+
+                }
+        },
+        mutations: {
+
+        },
+        actions: {
+
+        }
+})
+
+const app = createApp(App);
+
+app.use(store);
+
+app.mount('#app')
