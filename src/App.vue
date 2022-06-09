@@ -108,31 +108,7 @@ export default {
     },
     async saveNote() {
       return new Promise((resolve, reject) => {
-        let noteStore = this.database.transaction('notes', 'readwrite')
-            .objectStore('notes');
-
-        let noteRequest = noteStore.get(this.activeNote.created);
-
-        noteRequest.onerror = e => {
-          reject('Error saving the note in the database');
-        }
-
-        noteRequest.onsuccess = e => {
-          let note = e.target.result;
-          note.content = this.editor.getHTML();
-
-          let updateRequest = noteStore.put(note);
-
-          updateRequest.onerror = e => {
-            reject('Error stroing the update in the database.');
-          }
-
-          updateRequest.onsuccess = e => {
-            let noteIndex = this.notes.findIndex(n => n.created === note.created);
-            this.notes[noteIndex] = note;
-            resolve();
-          }
-        }
+        
       });
     },
     async getNotes() {

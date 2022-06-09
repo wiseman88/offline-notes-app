@@ -8,6 +8,7 @@ import { createStore } from 'vuex'
 const store = createStore({
         state() {
                 return {
+                        editor: null,
                         database: null,
                         notes: [],
                         activeNote: {},
@@ -15,6 +16,9 @@ const store = createStore({
                 }
         },
         mutations: {
+                updateEditor(state, editor){
+                        state.editor = editor
+                },
                 updateDatabase(state, database) {
                         state.database = database
                 },
@@ -61,6 +65,36 @@ const store = createStore({
                                         console.log('getNotes()', e.target.result);
                                         commit('updateNotes', e.target.result);
                                 }
+                },
+                saveNote({ commit, state }, note) {
+                        let noteStore = state.database.transaction('notes', 'readwrite')
+                                .objectStore('notes');
+
+                        let noteRequest = noteStore.get(state.activeNote.created);
+
+                        noteRequest.onerror = e => {
+                                console.log('Error saving the note in the database');
+                        }
+
+                        noteRequest.onsuccess = e => {
+                                let note = e.target.result;
+                                note.content = state.editor.getHTML();
+
+                                let updateRequest = noteStore.put(note);
+
+                                updateRequest.onerror = e => {
+                                        console.log('Error stroing the update in the database.');
+                                }
+
+                                updateRequest.onsuccess = e => {
+                                        let notes = state.notes;
+
+                                        let noteIndex = notes.findIndex(n => n.created === note.created);
+                                        notes[noteIndex] = note;
+                                        
+                                        commit('updateNotes', notes);
+                                }
+                        }
                 }
         }
 })
