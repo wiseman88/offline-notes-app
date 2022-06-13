@@ -5,7 +5,7 @@
 			<editor-content :editor="editor" />
 		</div>
 		<div class="h-16 p-2 bg-gray-100 border-t border-gray-300 text-right">
-			<button class="save-note" @click="saveNote()">Save Note</button>
+			<button class="save-note" @click="$store.dispatch('saveNote')">Save Note</button>
 		</div>
 	</div>
 </template>

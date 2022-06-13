@@ -27,6 +27,9 @@ const store = createStore({
                 },
                 updateActiveNote(state, activeNote) {
                         state.activeNote = activeNote
+                },
+                updateIsOffline(state, isOffline) {
+                        state.isOffline = isOffline
                 }
         },
         actions: {
@@ -116,6 +119,11 @@ const store = createStore({
                         // set activeNote as the new note
                         commit('updateActiveNote', note);
                         transaction.objectStore('notes').add(note);
+                },
+                destroyEditor({commit, state}){
+                        state.editor.destroy();
+
+                        commit('updateEditor', null);
                 }
         }
 })
