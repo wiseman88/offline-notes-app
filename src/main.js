@@ -31,7 +31,7 @@ const store = createStore({
         },
         actions: {
                 init({ dispatch }) {
-                        await dispatch('initDatabase');
+                        dispatch('initDatabase');
                         dispatch('initNotes');
                 },
                 initDatabase({ commit }) {
