@@ -16,7 +16,7 @@ const store = createStore({
                 }
         },
         mutations: {
-                updateEditor(state, editor){
+                updateEditor(state, editor) {
                         state.editor = editor
                 },
                 updateDatabase(state, database) {
@@ -24,6 +24,9 @@ const store = createStore({
                 },
                 updateNotes(state, databnotesase) {
                         state.notes = notes
+                },
+                updateActiveNote(state, activeNote) {
+                        state.activeNote = activeNote
                 }
         },
         actions: {
@@ -91,10 +94,28 @@ const store = createStore({
 
                                         let noteIndex = notes.findIndex(n => n.created === note.created);
                                         notes[noteIndex] = note;
-                                        
+
                                         commit('updateNotes', notes);
                                 }
                         }
+                },
+                addNewNote({ commit, state }) {
+                        let transaction = state.database.transaction('notes', 'readwrite');
+
+                        let now = new Date();
+                        let note = {
+                                content: '',
+                                created: now.getTime()
+                        }
+
+                        // add same note to the sidebar
+                        let notes = state.notes;
+                        notes.unshift(note);
+                        commit('updateNotes', notes);
+
+                        // set activeNote as the new note
+                        commit('updateActiveNote', note);
+                        transaction.objectStore('notes').add(note);
                 }
         }
 })

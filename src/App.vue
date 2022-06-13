@@ -63,11 +63,13 @@
 <script>
 import { Editor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
+import Sidebar from './components/Sidebar.vue';
 
 export default {
   name: 'App',
   components: {
-    EditorContent
+    EditorContent,
+    Sidebar,
   },
   data() {
     return {
@@ -101,56 +103,6 @@ export default {
     this.editor.destroy();
   },
   methods: {
-    async getDatabase() {
-      return new Promise((resolve, reject) => {
-        
-      });
-    },
-    async saveNote() {
-      return new Promise((resolve, reject) => {
-        
-      });
-    },
-    async getNotes() {
-      return new Promise((resolve, reject) => {
-        this.database.transaction('notes')
-          .objectStore('notes')
-          .getAll()
-          .onsuccess = e => {
-            console.log('getNotes()', e.target.result);
-            resolve(e.target.result);
-          }
-      });
-    },
-    openNote(note) {
-      this.editor.commands.setContent(note.content);
-      this.activeNote = note;
-    },
-    showAllNotes() {
-      this.editor.commands.clearContent();
-      this.activeNote = {};
-    },
-    addNewNote() {
-      return new Promise((resolve, reject) => {
-        let transaction = this.database.transaction('notes', 'readwrite');
-        transaction.oncomplete = e => {
-          resolve();
-        }
-
-        let now = new Date();
-        let note = {
-          content: '',
-          created: now.getTime()
-        }
-
-        // add same note to the sidebar
-        this.notes.unshift(note);
-
-        // set activeNote as the new note
-        this.activeNote = note;
-        transaction.objectStore('notes').add(note);
-      });
-    },
     syncUserData(){
       if (this.isOffline) {
         return;
