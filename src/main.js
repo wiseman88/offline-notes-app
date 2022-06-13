@@ -69,7 +69,7 @@ const store = createStore({
                                         commit('updateNotes', e.target.result);
                                 }
                 },
-                saveNote({ commit, state }, note) {
+                saveNote({ commit, state }) {
                         let noteStore = state.database.transaction('notes', 'readwrite')
                                 .objectStore('notes');
 

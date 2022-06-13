@@ -6,17 +6,6 @@
     <sidebar></sidebar>
     <editor v-if="Object.keys(activeNote).length"></editor>
     <notes v-else></notes>
-    <div class="flex flex-col flex-grow" v-if="Object.keys(activeNote).length">
-      <!-- main content - editor -->
-      <div class="flex flex-col flex-grow overflow-auto">
-        <editor-content :editor="editor" />
-      </div>
-      <div class="h-16 p-2 bg-gray-100 border-t border-gray-300 text-right">
-        <button class="save-note" @click="saveNote()">
-          Save Note
-        </button>
-      </div>
-    </div>
     <div class="flex flex-col flex-grow" v-else>
       <!-- main content - notes list -->
       <div class="flex flex-col flex-grow overflow-auto">
@@ -37,34 +26,23 @@
 </template>
 
 <script>
-import { Editor, EditorContent } from '@tiptap/vue-3';
-import StarterKit from '@tiptap/starter-kit';
 import Sidebar from './components/Sidebar.vue';
+import Editor from './components/Editor.vue';
+import Notes from './components/Notes.vue';
 
 export default {
   name: 'App',
   components: {
-    EditorContent,
     Sidebar,
+    Editor,
+    Notes
   },
   data() {
     return {
-      editor: null,
+      
     }
   },
   mounted() {
-    this.editor = new Editor({
-      content: '',
-      extensions: [
-        StarterKit
-      ],
-      editorProps: {
-        attributes: {
-          class: "prose my-6 mx-auto focus:outline-none bg-gray-200 rounded p-2"
-        }
-      }
-    });
-
     window.addEventListener('offline', e => {
       this.isOffline = true;
     });
