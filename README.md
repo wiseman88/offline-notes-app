@@ -1,4 +1,4 @@
-# offline-notes-app
+# Offline-First Vue App
 
 ## Project setup
 ```
