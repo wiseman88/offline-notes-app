@@ -22,11 +22,11 @@ const store = createStore({
                 updateDatabase(state, database) {
                         state.database = database
                 },
-                updateNotes(state, databnotesase) {
+                updateNotes(state, notes) {
                         state.notes = notes
                 },
-                updateActiveNote(state, activeNote) {
-                        state.activeNote = activeNote
+                updateActiveNote(state, note) {
+                        state.activeNote = note
                 },
                 updateIsOffline(state, isOffline) {
                         state.isOffline = isOffline
@@ -34,44 +34,47 @@ const store = createStore({
         },
         actions: {
                 init({ dispatch }) {
-                        dispatch('initDatabase');
-                        dispatch('initNotes');
+                        dispatch('initDatabase').then(() => {
+                                dispatch('initNotes')
+                        }).catch((e) => {
+                                console.error(e)
+                        })
                 },
                 initDatabase({ commit }) {
-
-                        let db = window.indexedDB.open("notes", 2);
-
-                        db.onerror = e => {
-                                console.log("Error opening the database.");
-                        };
-
-                        db.onsuccess = e => {
-                                console.log('db.onsuccess', e);
-                                commit('updateDatabase', e.target.result);
-                        };
-
-                        db.onupgradeneeded = e => {
-                                console.log('db.onupgradeneeded', e);
-
-                                if (e.oldVersion === 1) {
+                        return new Promise((resolve, reject) => {
+                                // initialize the database
+                                let db = window.indexedDB.open("notes", 2);
+                
+                                db.onerror = e => {
+                                    reject('Error opening the database.');
+                                };
+                
+                                db.onsuccess = e => {
+                                    console.log('db.onsuccess', e);
+                                    commit('updateDatabase', e.target.result);
+                                    resolve('Test');
+                                };
+                
+                                db.onupgradeneeded = e => {
+                                    console.log('db.onupgradeneeded', e);
+                
+                                    if (e.oldVersion === 1) {
                                         e.target.result.deleteObjectStore("notes");
-                                }
-                                e.target.result.createObjectStore("notes", { keyPath: "created" });
-                        };
-
-                        commit('updateDatabase', database);
+                                    }
+                                    e.target.result.createObjectStore("notes", { keyPath: "created" });
+                                };
+                            });
                 },
                 initNotes({ commit, state }) {
-                        commit('updateNotes', notes);
-
+                        // initialize the notes array
                         state.database.transaction('notes')
-                                .objectStore('notes')
-                                .getAll()
-                                .onsuccess = e => {
-                                        console.log('getNotes()', e.target.result);
-                                        commit('updateNotes', e.target.result);
-                                }
-                },
+                            .objectStore('notes')
+                            .getAll()
+                            .onsuccess = e => {
+                                console.log('getNotes()', e.target.result);
+                                commit('updateNotes', e.target.result);
+                            };
+                    },
                 saveNote({ commit, state }) {
                         let noteStore = state.database.transaction('notes', 'readwrite')
                                 .objectStore('notes');
@@ -120,7 +123,7 @@ const store = createStore({
                         commit('updateActiveNote', note);
                         transaction.objectStore('notes').add(note);
                 },
-                destroyEditor({commit, state}){
+                destroyEditor({ commit, state }) {
                         state.editor.destroy();
 
                         commit('updateEditor', null);
@@ -133,3 +136,5 @@ const app = createApp(App);
 app.use(store);
 
 app.mount('#app')
+
+store.dispatch('init')
