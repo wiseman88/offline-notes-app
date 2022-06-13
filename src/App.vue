@@ -3,33 +3,9 @@
     <div v-if="isOffline" class="absolute top-0 left-0 opacity-75 z-10 w-full text-center py-2 bg-red-300 border-b border-red-500 text-red-800">
       Sorry, it looks like you're offline.
     </div>
-    <div class="flex flex-col flex-shrink-0 w-64 border-r border-gray-300 bg-gray-100">
-      <!-- sidebar -->
-      <div class="h-0 overflow-auto flex-grow">
-        <div class="flex items-center h-8 px-3 group mt-4">
-          <div class="flex items-center flex-grow focus:outline-none">
-            <a href="#" @click.prevent="showAllNotes" class="ml-2 leading-none font-medium text-sm">
-              All Notes
-            </a>
-          </div>
-          <button class="add-note" @click.prevent="addNewNote">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
-              </path>
-            </svg>
-          </button>
-        </div>
-        <div class="mt-4">
-          <a v-for="note in notes" :key="note.created" href="#" @click.prevent="openNote(note)"
-            class="flex items-center h-8 text-sm pl-8 pr-3">
-            <span class="ml-2 leading-none">
-              {{ new Date(note.created).toLocaleString() }}
-            </span>
-          </a>
-        </div>
-      </div>
-    </div>
+    <sidebar></sidebar>
+    <editor v-if="Object.keys(activeNote).length"></editor>
+    <notes v-else></notes>
     <div class="flex flex-col flex-grow" v-if="Object.keys(activeNote).length">
       <!-- main content - editor -->
       <div class="flex flex-col flex-grow overflow-auto">
@@ -107,6 +83,11 @@ export default {
       if (this.isOffline) {
         return;
       }
+    }
+  },
+  computed: {
+    activeNote(){
+      return this.$store.state.activeNote;
     }
   }
 }
